@@ -3,5 +3,5 @@ main = "src/index.js"
 compatibility_date = "2025-01-01"
 
 [vars]
-# Адрес опубликованного приложения (подставим после публикации на GitHub Pages)
-ALLOWED_ORIGIN = "*"
+# Адрес опубликованного приложения
+ALLOWED_ORIGIN = "https://nivse23.github.io"
