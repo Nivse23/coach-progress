@@ -7,7 +7,42 @@
     <!-- Личное приложение: не индексировать в поисковиках -->
     <meta name="robots" content="noindex, nofollow, noarchive" />
     <meta name="referrer" content="no-referrer" />
+    <!-- Страница всегда свежая: после обновления Telegram не должен держать старую версию -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta http-equiv="Pragma" content="no-cache" />
     <title>Coach Progress</title>
+    <script>
+      // Если старая страница из кэша ссылается на файлы прошлой версии (их уже нет) —
+      // один раз перезагружаемся со свежей страницей вместо белого экрана.
+      ;(function () {
+        var KEY = 'cp-reloaded'
+        function reload() {
+          try {
+            if (sessionStorage.getItem(KEY)) return
+            sessionStorage.setItem(KEY, '1')
+          } catch (e) {}
+          var url = location.href.split('#')
+          var base = url[0].replace(/([?&])v=\d+&?/, '$1').replace(/[?&]$/, '')
+          location.replace(base + (base.indexOf('?') < 0 ? '?' : '&') + 'v=' + Date.now() + (url[1] ? '#' + url[1] : ''))
+        }
+        window.addEventListener(
+          'error',
+          function (e) {
+            var t = e.target
+            if (t && (t.tagName === 'SCRIPT' || t.tagName === 'LINK') && /\/assets\//.test(t.src || t.href || '')) reload()
+          },
+          true,
+        )
+        // Приложение запустилось — сбрасываем флаг, чтобы при следующем обновлении это снова сработало
+        window.addEventListener('load', function () {
+          setTimeout(function () {
+            if (document.getElementById('root').childElementCount) {
+              try { sessionStorage.removeItem(KEY) } catch (e) {}
+            } else reload()
+          }, 3000)
+        })
+      })()
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet" />
