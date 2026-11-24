@@ -81,14 +81,23 @@ export default {
       return reply('Неверный запрос', 400)
     }
 
-    const user = await verifyInitData(String(form.get('initData') || ''), env.BOT_TOKEN)
-    if (!user?.id) return reply('Нет доступа', 403)
+    const initData = String(form.get('initData') || '')
+    if (!initData) return reply('Нет доступа: нет подписи Telegram', 403)
+    const user = await verifyInitData(initData, env.BOT_TOKEN)
+    if (!user?.id) {
+      // Подпись не сошлась — проверяем, рабочий ли вообще сохранённый токен
+      const me = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/getMe`)
+        .then((r) => r.json())
+        .catch(() => ({}))
+      if (!me.ok) return reply('Нет доступа: токен бота в Cloudflare недействителен — вставьте его заново', 403)
+      return reply(`Нет доступа: подпись не совпала. Токен в Cloudflare от бота @${me.result.username} — откройте приложение именно через него`, 403)
+    }
 
     const allowed = String(env.ALLOWED_IDS || '')
       .split(',')
       .map((s) => s.trim())
       .filter(Boolean)
-    if (!allowed.includes(String(user.id))) return reply('Нет доступа', 403)
+    if (!allowed.includes(String(user.id))) return reply(`Нет доступа: ID ${user.id} не в списке`, 403)
 
     const file = form.get('file')
     if (!(file instanceof File) || file.size === 0 || file.size > MAX_BYTES) return reply('Нет файла', 400)
