@@ -1,0 +1,7 @@
+name = "coach-progress-files"
+main = "src/index.js"
+compatibility_date = "2025-01-01"
+
+[vars]
+# Адрес опубликованного приложения (подставим после публикации на GitHub Pages)
+ALLOWED_ORIGIN = "*"
