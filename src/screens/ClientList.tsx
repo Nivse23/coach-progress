@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react'
 import type { Nav } from '../App'
 import { ago, daysSince, db, type ActivityEvent } from '../db'
-import { IconCamera, IconChevron, IconDumbbell, IconPlus, IconRuler, IconScale, IconUsers } from '../icons'
+import { IconCamera, IconChevron, IconDumbbell, IconPlus, IconRuler, IconScale, IconShield, IconUsers } from '../icons'
+import { lastBackupDate } from '../backup'
 import { tg } from '../telegram'
 import type { Client } from '../types'
 
@@ -43,6 +44,8 @@ export default function ClientList({ nav }: { nav: Nav }) {
   const activeCount = (rows ?? []).filter(isActive).length
   const weekUpdates = events.filter((e) => daysSince(e.date) <= ACTIVE_DAYS).length
   const coachName = tg?.initDataUnsafe?.user?.first_name
+  const lastBackup = lastBackupDate()
+  const needBackup = !!rows?.length && (!lastBackup || daysSince(lastBackup) > ACTIVE_DAYS)
 
   const filtered = (rows ?? []).filter((c) =>
     `${c.firstName} ${c.lastName}`.toLowerCase().includes(q.trim().toLowerCase()),
@@ -80,6 +83,23 @@ export default function ClientList({ nav }: { nav: Nav }) {
           <IconDumbbell /> Тренировка
         </button>
       </div>
+
+      {needBackup && (
+        <div className="card backup-hint" onClick={() => nav.tab({ name: 'backup' })}>
+          <div className="feed-ic">
+            <IconShield />
+          </div>
+          <div className="grow">
+            <div className="title">Сделайте резервную копию</div>
+            <div className="muted small">
+              {lastBackup ? `Последняя — ${ago(lastBackup)}` : 'Данные хранятся только на этом телефоне'}
+            </div>
+          </div>
+          <span className="chev">
+            <IconChevron />
+          </span>
+        </div>
+      )}
 
       {events.length > 0 && (
         <>

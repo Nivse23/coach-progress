@@ -257,5 +257,14 @@ input[type='date']::-webkit-calendar-picker-indicator { filter: invert(0.7); }
   width: calc(100% - 32px); max-width: 420px; display: flex; gap: 4px; padding: 6px;
   background: rgba(32, 36, 40, 0.92); backdrop-filter: blur(16px); border-radius: 22px; border: 1px solid var(--line);
 }
-.tabbar button { flex: 1; border: 0; background: none; padding: 9px 0; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 14px; font-weight: 700; color: var(--muted); cursor: pointer; border-radius: 16px; }
+.tabbar button { flex: 1; min-width: 0; border: 0; background: none; padding: 9px 0; display: flex; align-items: center; justify-content: center; gap: 6px; font-size: 13px; font-weight: 700; color: var(--muted); cursor: pointer; border-radius: 16px; }
 .tabbar button.active { background: var(--accent); color: var(--on-accent); }
+
+/* Резервная копия */
+.backup-head { display: flex; align-items: center; gap: 12px; }
+.backup-head .title { font-weight: 700; }
+.backup-text { margin: 12px 0 14px; line-height: 1.45; }
+.backup-steps { margin: 12px 0 14px; padding-left: 20px; line-height: 1.45; }
+.backup-steps li + li { margin-top: 6px; }
+.backup-hint { display: flex; align-items: center; gap: 12px; cursor: pointer; }
+.backup-hint .title { font-weight: 700; }

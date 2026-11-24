@@ -73,6 +73,27 @@ async function del(name: StoreName, id: string) {
   await wrap((await store(name, 'readwrite')).delete(id))
 }
 
+export const ALL_STORES: StoreName[] = ['clients', 'weights', 'photos', 'exercises', 'measurements', 'workouts']
+
+/** Все записи всех таблиц — для резервной копии */
+export async function dumpAll(): Promise<Record<StoreName, unknown[]>> {
+  const out = {} as Record<StoreName, unknown[]>
+  for (const name of ALL_STORES) out[name] = await all(name)
+  return out
+}
+
+/** Записывает данные из копии одной транзакцией: совпадающие записи заменяются, остальные остаются */
+export async function restoreAll(data: Partial<Record<StoreName, unknown[]>>) {
+  const conn = await openDb()
+  const tx = conn.transaction(ALL_STORES, 'readwrite')
+  for (const name of ALL_STORES) for (const v of data[name] ?? []) tx.objectStore(name).put(v)
+  await new Promise<void>((resolve, reject) => {
+    tx.oncomplete = () => resolve()
+    tx.onerror = () => reject(tx.error)
+    tx.onabort = () => reject(tx.error ?? new Error('Восстановление прервано'))
+  })
+}
+
 export const newId = () =>
   (crypto.randomUUID?.() ?? Date.now().toString(36) + Math.random().toString(36).slice(2))
 

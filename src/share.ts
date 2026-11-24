@@ -9,13 +9,15 @@ export type DeliveryResult = 'bot' | 'shared' | 'downloaded' | 'cancelled'
 const XLSX = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
 const RELAY = import.meta.env.VITE_FILE_RELAY_URL
 
+const mimeOf = (fileName: string) => (/\.json$/i.test(fileName) ? 'application/json' : XLSX)
+
 export const botDeliveryAvailable = () => !!RELAY && insideTelegram && !!tg?.initData
 
 async function sendViaBot(blob: Blob, fileName: string, caption: string) {
   const fd = new FormData()
   fd.append('initData', tg!.initData!)
   fd.append('caption', caption)
-  fd.append('file', new File([blob], fileName, { type: XLSX }))
+  fd.append('file', new File([blob], fileName, { type: mimeOf(fileName) }))
   const res = await fetch(RELAY!, { method: 'POST', body: fd })
   if (!res.ok) throw new Error((await res.text()) || `Ошибка ${res.status}`)
 }
@@ -26,7 +28,7 @@ export async function deliverFile(blob: Blob, fileName: string, caption = ''): P
     return 'bot'
   }
 
-  const file = new File([blob], fileName, { type: XLSX })
+  const file = new File([blob], fileName, { type: mimeOf(fileName) })
   if (navigator.canShare?.({ files: [file] })) {
     try {
       await navigator.share({ files: [file], title: fileName })

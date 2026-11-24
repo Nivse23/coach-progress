@@ -10,7 +10,7 @@
 // Переменная (wrangler.toml):
 //   ALLOWED_ORIGIN — адрес приложения, например https://<логин>.github.io
 
-const MAX_BYTES = 10 * 1024 * 1024 // 10 МБ
+const MAX_BYTES = 45 * 1024 * 1024 // 45 МБ (лимит Telegram для ботов — 50 МБ; резервная копия с фото бывает большой)
 const MAX_AGE_SEC = 24 * 60 * 60 // initData старше суток не принимаем
 const enc = new TextEncoder()
 
@@ -101,7 +101,8 @@ export default {
 
     const file = form.get('file')
     if (!(file instanceof File) || file.size === 0 || file.size > MAX_BYTES) return reply('Нет файла', 400)
-    if (!/\.xlsx$/i.test(file.name)) return reply('Разрешены только файлы Excel', 400)
+    // Только выгрузки Excel и резервные копии приложения
+    if (!/\.(xlsx|json)$/i.test(file.name)) return reply('Разрешены только Excel и резервные копии', 400)
 
     const tg = new FormData()
     tg.append('chat_id', String(user.id))

@@ -1,18 +1,20 @@
 import { useEffect, useState } from 'react'
 import { insideTelegram, setBackButton } from './telegram'
-import { IconBack, IconDumbbell, IconUsers } from './icons'
+import { IconBack, IconDumbbell, IconShield, IconUsers } from './icons'
 import ClientList from './screens/ClientList'
 import ClientCard from './screens/ClientCard'
 import ClientForm from './screens/ClientForm'
 import Exercises from './screens/Exercises'
 import SessionSetup from './screens/SessionSetup'
 import GroupWorkout from './screens/GroupWorkout'
+import Backup from './screens/Backup'
 
 export type Route =
   | { name: 'clients' }
   | { name: 'client'; id: string }
   | { name: 'clientForm'; id?: string }
   | { name: 'exercises' }
+  | { name: 'backup' }
   | { name: 'sessionSetup'; preselect?: string; date?: string }
   | { name: 'session'; ids: string[]; date: string }
 
@@ -58,6 +60,7 @@ export default function App() {
         {route.name === 'client' && <ClientCard key={route.id} id={route.id} nav={nav} />}
         {route.name === 'clientForm' && <ClientForm id={route.id} nav={nav} />}
         {route.name === 'exercises' && <Exercises />}
+        {route.name === 'backup' && <Backup />}
         {route.name === 'sessionSetup' && <SessionSetup nav={nav} preselect={route.preselect} date={route.date} />}
         {route.name === 'session' && <GroupWorkout key={route.ids.join()} ids={route.ids} date={route.date} />}
       </main>
@@ -68,6 +71,9 @@ export default function App() {
           </button>
           <button className={route.name === 'exercises' ? 'active' : ''} onClick={() => nav.tab({ name: 'exercises' })}>
             <IconDumbbell /> Упражнения
+          </button>
+          <button className={route.name === 'backup' ? 'active' : ''} onClick={() => nav.tab({ name: 'backup' })}>
+            <IconShield /> Копия
           </button>
         </nav>
       )}

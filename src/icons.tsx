@@ -71,3 +71,16 @@ export const IconCompare = () => (
     <rect x="13.5" y="4" width="7.5" height="16" rx="2" />
   </svg>
 )
+export const IconShield = () => (
+  <svg {...base}>
+    <path d="M12 3l7.5 3v5.5c0 4.6-3.2 8.3-7.5 9.5-4.3-1.2-7.5-4.9-7.5-9.5V6z" />
+    <path d="M8.8 12.2l2.2 2.2 4.2-4.4" />
+  </svg>
+)
+export const IconRestore = () => (
+  <svg {...base}>
+    <path d="M3.5 12a8.5 8.5 0 1 0 2.5-6" />
+    <path d="M3.5 4v4.5H8" />
+    <path d="M12 8v4.5l3 1.8" />
+  </svg>
+)
